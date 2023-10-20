@@ -35,6 +35,8 @@ parser.add_argument('--trigger-alpha', type=float, default=1.0, help='the transp
 parser.add_argument('--anp-eps', type=float, default=0.4)
 parser.add_argument('--anp-steps', type=int, default=1)
 parser.add_argument('--anp-alpha', type=float, default=0.2)
+parser.add_argument('--clean_label', type=float, default=-1)
+
 
 args = parser.parse_args()
 args_dict = vars(args)
