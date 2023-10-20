@@ -6,6 +6,30 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
+# def split_dataset(dataset, val_frac=0.1, perm=None):
+#     """
+#     :param dataset: The whole dataset which will be split.
+#     :param val_frac: the fraction of validation set.
+#     :param perm: A predefined permutation for sampling. If perm is None, generate one.
+#     :return: A training set + a validation set
+#     """
+#     if perm is None:
+#         perm = np.arange(len(dataset))
+#         np.random.shuffle(perm)
+#     nb_val = int(val_frac * len(dataset))
+
+#     # generate the training set
+#     train_set = deepcopy(dataset)
+#     train_set.data = train_set.data[perm[nb_val:]]
+#     train_set.targets = np.array(train_set.targets)[perm[nb_val:]].tolist()
+
+#     # generate the test set
+#     val_set = deepcopy(dataset)
+#     val_set.data = val_set.data[perm[:nb_val]]
+#     val_set.targets = np.array(val_set.targets)[perm[:nb_val]].tolist()
+#     return train_set, val_set
+
+
 def split_dataset(dataset, val_frac=0.1, perm=None):
     """
     :param dataset: The whole dataset which will be split.
@@ -16,17 +40,29 @@ def split_dataset(dataset, val_frac=0.1, perm=None):
     if perm is None:
         perm = np.arange(len(dataset))
         np.random.shuffle(perm)
-    nb_val = int(val_frac * len(dataset))
-
-    # generate the training set
+    
+    # Get the indices of data with label 0
+    zero_indices = np.where(np.array(dataset.targets) == 0)[0]
+    
+    # Calculate how many of the label 0 samples we want in the validation set
+    nb_val = int(val_frac * len(zero_indices))
+    
+    # Indices for validation set (only label 0 samples)
+    val_indices = zero_indices[perm[:nb_val]]
+    
+    # Indices for training set (all samples not in the validation set)
+    train_indices = np.delete(perm, val_indices)
+    
+    # Generate the training set
     train_set = deepcopy(dataset)
-    train_set.data = train_set.data[perm[nb_val:]]
-    train_set.targets = np.array(train_set.targets)[perm[nb_val:]].tolist()
-
-    # generate the test set
+    train_set.data = train_set.data[train_indices]
+    train_set.targets = np.array(train_set.targets)[train_indices].tolist()
+    
+    # Generate the validation set
     val_set = deepcopy(dataset)
-    val_set.data = val_set.data[perm[:nb_val]]
-    val_set.targets = np.array(val_set.targets)[perm[:nb_val]].tolist()
+    val_set.data = val_set.data[val_indices]
+    val_set.targets = np.array(val_set.targets)[val_indices].tolist()
+    
     return train_set, val_set
 
 
