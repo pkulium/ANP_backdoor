@@ -24,7 +24,7 @@ def split_dataset(dataset, val_frac=0.1, perm=None):
     train_set.targets = np.array(train_set.targets)[perm[nb_val:]].tolist()
 
     # generate the test set
-    zero_label_indices = np.where(np.array(dataset.targets) == 0)[0][:nb_val]
+    zero_label_indices = np.where(np.array(dataset.targets) == 1)[0][:nb_val]
     val_set = deepcopy(dataset)
     val_set.data = val_set.data[zero_label_indices]
     val_set.targets = np.array(val_set.targets)[zero_label_indices].tolist()
