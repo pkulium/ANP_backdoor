@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-def split_dataset(dataset, val_frac=0.1, perm=None):
+def split_dataset(dataset, val_frac=0.1, perm=None, label=0):
     """
     :param dataset: The whole dataset which will be split.
     :param val_frac: the fraction of validation set.
@@ -24,7 +24,7 @@ def split_dataset(dataset, val_frac=0.1, perm=None):
     train_set.targets = np.array(train_set.targets)[perm[nb_val:]].tolist()
 
     # generate the test set
-    zero_label_indices = np.where(np.array(dataset.targets) == 1)[0][:nb_val]
+    zero_label_indices = np.where(np.array(dataset.targets) == label)[0][:nb_val]
     val_set = deepcopy(dataset)
     val_set.data = val_set.data[zero_label_indices]
     val_set.targets = np.array(val_set.targets)[zero_label_indices].tolist()
