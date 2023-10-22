@@ -26,7 +26,7 @@ parser.add_argument('--data-dir', type=str, default='../data', help='dir to the 
 parser.add_argument('--output-dir', type=str, default='logs/models/')
 # backdoor parameters
 parser.add_argument('--clb-dir', type=str, default='', help='dir to training data under clean label attack')
-parser.add_argument('--poison-type', type=str, default='badnets', choices=['badnets', 'blend', 'clean-label', 'benign'],
+parser.add_argument('--poison-type', type=str, default='benign', choices=['badnets', 'blend', 'clean-label', 'benign'],
                     help='type of backdoor attacks used during training')
 parser.add_argument('--poison-rate', type=float, default=0.05,
                     help='proportion of poison examples in the training set')
