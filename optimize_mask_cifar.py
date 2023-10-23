@@ -114,7 +114,7 @@ def main():
         print('{} \t {:.3f} \t {:.1f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
             (i + 1) * args.print_every, lr, end - start, train_loss, train_acc, po_test_loss, po_test_acc,
             cl_test_loss, cl_test_acc))
-    save_mask_scores(net.state_dict(), os.path.join(args.output_dir, 'mask_values.txt'))
+    save_mask_scores(net.state_dict(), os.path.join(args.output_dir, f'mask_values_{args.clean_label}.txt'))
 
 
 def load_state_dict(net, orig_state_dict):
