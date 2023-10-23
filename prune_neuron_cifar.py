@@ -123,9 +123,9 @@ def evaluate_by_number(model, mask_values, pruning_max, pruning_step, criterion,
         layer_name, neuron_idx, value = mask_values[i][0], mask_values[i][1], mask_values[i][2]
         cl_loss, cl_acc = test(model=model, criterion=criterion, data_loader=clean_loader)
         po_loss, po_acc = test(model=model, criterion=criterion, data_loader=poison_loader)
-        print('{} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
+        print('{} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
             i+1, layer_name, neuron_idx, value, po_loss, po_acc, cl_loss, cl_acc))
-        results.append('{} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
+        results.append('{} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
             i+1, layer_name, neuron_idx, value, po_loss, po_acc, cl_loss, cl_acc))
     return results
 
