@@ -169,7 +169,7 @@ def evaluate_by_number(model, mask_values, pruning_max, pruning_step, criterion,
 #             start, layer_name, neuron_idx, value, po_loss, po_acc, cl_loss, cl_acc))
 #     return results
 
-def prune_by_threshold(model, mask_values, pruning_max, pruning_step):
+def evaluate_by_threshold(model, mask_values, pruning_max, pruning_step):
     # thresholds = np.arange(0, pruning_max + pruning_step, pruning_step)
     # start = 0
     # for threshold in thresholds:
