@@ -74,7 +74,7 @@ def main():
             trigger_info = {'trigger_pattern': pattern[np.newaxis, :, :, :], 'trigger_mask': mask[np.newaxis, :, :, :],
                             'trigger_alpha': args.trigger_alpha, 'poison_target': np.array([args.poison_target])}
 
-    orig_train = CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
+    orig_train = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_train)
     _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
                                         perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int), clean_label = args.clean_label)
     clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
