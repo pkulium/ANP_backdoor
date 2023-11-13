@@ -83,18 +83,37 @@ def main():
         _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
                                         perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int))
     else:
-        # Define your transformations (modify as needed)
-        transform_train = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.5,), (0.5,))
-        ])
+        cifar10_to_stl10 = {
+            0: 0,  # 'airplane' to 'airplane'
+            1: 2,  # 'automobile' to 'car'
+            2: 1,  # 'bird' to 'bird'
+            3: 3,  # 'cat' to 'cat'
+            4: 4,  # 'deer' to 'deer'
+            5: 5,  # 'dog' to 'dog'
+            # 6: -1, # 'frog' has no direct equivalent in STL10 (excluded)
+            7: 6,  # 'horse' to 'horse'
+            8: 8,  # 'ship' to 'ship'
+            9: 9   # 'truck' to 'truck'
+        }
 
-        # Load STL-10 training data
-        orig_train = datasets.STL10(root=f'args.data_dir/{args.dataset}', split='train',
-                                    download=True, transform=transform_train)
-        # DataLoader for STL-10
-        _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac)
+              
+      # Set the number of samples you want to test on
+      num_samples = 1000  # Adjust this number as needed
       
+      # Transformation for STL10 (resize to 32x32 and normalize like CIFAR10)
+      transform_stl10 = transforms.Compose([
+          transforms.Resize((32, 32)),
+          transforms.ToTensor(),
+          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # adjust these values if they were different for CIFAR10
+      ])
+      
+      # Load STL10 test data
+      stl10_test_full = datasets.STL10(root='path/to/save/data', split='test', download=True, transform=transform_stl10)
+      
+      # Randomly sample a subset of the STL10 dataset
+      indices = np.random.choice(len(stl10_test_full), num_samples, replace=False)
+      clean_val = Subset(stl10_test_full, indices)
+
     clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
     poison_test = poison.add_predefined_trigger_cifar(data_set=clean_test, trigger_info=trigger_info)
 
