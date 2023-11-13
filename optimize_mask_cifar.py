@@ -12,7 +12,8 @@ from torch.utils.data import Subset
 
 import models
 import data.poison_cifar as poison
-
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 parser = argparse.ArgumentParser(description='Train poisoned networks')
 
 # Basic model parameters.
