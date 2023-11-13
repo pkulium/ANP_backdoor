@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
 from torchvision import datasets
-
+from torch.utils.data import Subset
 
 import models
 import data.poison_cifar as poison
@@ -49,6 +49,30 @@ print(args_dict)
 os.makedirs(args.output_dir, exist_ok=True)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+ # CIFAR10 to STL10 class mapping (excluding 'frog')
+cifar10_to_stl10 = {
+    0: 0,  # 'airplane' to 'airplane'
+    1: 2,  # 'automobile' to 'car'
+    2: 1,  # 'bird' to 'bird'
+    3: 3,  # 'cat' to 'cat'
+    4: 4,  # 'deer' to 'deer'
+    5: 5,  # 'dog' to 'dog'
+    7: 6,  # 'horse' to 'horse'
+    8: 8,  # 'ship' to 'ship'
+    9: 9   # 'truck' to 'truck'
+}
+
+stl10_to_cifar10 = {
+    0: 0,  # 'airplane' to 'airplane'
+    2: 1,  # 'automobile' to 'car'
+    1: 2,  # 'bird' to 'bird'
+    3: 3,  # 'cat' to 'cat'
+    4: 4,  # 'deer' to 'deer'
+    5: 5,  # 'dog' to 'dog'
+    6: 7,  # 'horse' to 'horse'
+    8: 8,  # 'ship' to 'ship'
+    9: 9   # 'truck' to 'truck'
+}
 
 def main():
     MEAN_CIFAR10 = (0.4914, 0.4822, 0.4465)
@@ -83,36 +107,29 @@ def main():
         _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
                                         perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int))
     else:
-        cifar10_to_stl10 = {
-            0: 0,  # 'airplane' to 'airplane'
-            1: 2,  # 'automobile' to 'car'
-            2: 1,  # 'bird' to 'bird'
-            3: 3,  # 'cat' to 'cat'
-            4: 4,  # 'deer' to 'deer'
-            5: 5,  # 'dog' to 'dog'
-            # 6: -1, # 'frog' has no direct equivalent in STL10 (excluded)
-            7: 6,  # 'horse' to 'horse'
-            8: 8,  # 'ship' to 'ship'
-            9: 9   # 'truck' to 'truck'
-        }
+       
+        # Set the number of samples you want to test on
+        num_samples = 1000  # Adjust this number as needed
 
-              
-      # Set the number of samples you want to test on
-      num_samples = 1000  # Adjust this number as needed
-      
-      # Transformation for STL10 (resize to 32x32 and normalize like CIFAR10)
-      transform_stl10 = transforms.Compose([
-          transforms.Resize((32, 32)),
-          transforms.ToTensor(),
-          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # adjust these values if they were different for CIFAR10
-      ])
-      
-      # Load STL10 test data
-      stl10_test_full = datasets.STL10(root=f'{args.data_dir}/{args.dataset}', split='test', download=True, transform=transform_stl10)
-      
-      # Randomly sample a subset of the STL10 dataset
-      indices = np.random.choice(len(stl10_test_full), num_samples, replace=False)
-      clean_val = Subset(stl10_test_full, indices)
+        # Transformation for STL10 (resize to 32x32 and normalize like CIFAR10)
+        transform_stl10 = transforms.Compose([
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # adjust these values if they were different for CIFAR10
+        ])
+
+        # Load STL10 test data
+        stl10_test_full = datasets.STL10(root=f'{args.data_dir}/{args.dataset}', split='test', download=True, transform=transform_stl10)
+
+        # Filter out indices for classes that do not match with CIFAR10
+        matching_indices = [i for i, label in enumerate(stl10_test_full.labels) if label in cifar10_to_stl10.values()]
+
+        # Randomly sample a subset of the filtered STL10 dataset
+        if len(matching_indices) < num_samples:
+            num_samples = len(matching_indices)  # Adjust num_samples if there aren't enough matching samples
+        indices = np.random.choice(matching_indices, num_samples, replace=False)
+        stl10_test_subset = Subset(stl10_test_full, indices)
+
 
     clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
     poison_test = poison.add_predefined_trigger_cifar(data_set=clean_test, trigger_info=trigger_info)
@@ -214,6 +231,7 @@ def mask_train(model, criterion, mask_opt, noise_opt, data_loader):
     total_loss = 0.0
     nb_samples = 0
     for i, (images, labels) in enumerate(data_loader):
+        labels = torch.tensor([stl10_to_cifar10[label.item()] for label in labels])
         images, labels = images.to(device), labels.to(device)
         nb_samples += images.size(0)
 
