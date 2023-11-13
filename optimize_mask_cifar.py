@@ -22,7 +22,7 @@ parser.add_argument('--batch-size', type=int, default=128, help='the batch size 
 parser.add_argument('--lr', type=float, default=0.01, help='the learning rate for mask optimization')
 parser.add_argument('--nb-iter', type=int, default=2000, help='the number of iterations for training')
 parser.add_argument('--print-every', type=int, default=500, help='print results every few iterations')
-parser.add_argument('--data-dir', type=str, default='../data', help='dir to the dataset')
+parser.add_argument('--data-dir', type=str, default='./data_dir', help='dir to the dataset')
 parser.add_argument('--val-frac', type=float, default=0.01, help='The fraction of the validate set')
 parser.add_argument('--output-dir', type=str, default='logs/models/')
 
@@ -36,6 +36,9 @@ parser.add_argument('--anp-eps', type=float, default=0.4)
 parser.add_argument('--anp-steps', type=int, default=1)
 parser.add_argument('--anp-alpha', type=float, default=0.2)
 parser.add_argument('--clean_label', type=float, default=-1)
+parser.add_argument('--dataset', type=str, default='stl10')
+
+
 
 
 args = parser.parse_args()
@@ -73,10 +76,23 @@ def main():
             pattern, mask = poison.generate_trigger(trigger_type=trigger_type)
             trigger_info = {'trigger_pattern': pattern[np.newaxis, :, :, :], 'trigger_mask': mask[np.newaxis, :, :, :],
                             'trigger_alpha': args.trigger_alpha, 'poison_target': np.array([args.poison_target])}
+    if args.dataset == 'cifar10':
+        orig_train = CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
+        _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
+                                        perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int))
+    else:
+        # Define your transformations (modify as needed)
+        transform_train = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
 
-    orig_train = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_train)
-    _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
-                                        perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int), clean_label = args.clean_label)
+        # Load STL-10 training data
+        orig_train = datasets.STL10(root=f'args.data_dir/{args.dataset}', split='train',
+                                    download=True, transform=transform_train)
+        # DataLoader for STL-10
+        _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac)
+      
     clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
     poison_test = poison.add_predefined_trigger_cifar(data_set=clean_test, trigger_info=trigger_info)
 
