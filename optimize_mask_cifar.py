@@ -39,7 +39,7 @@ parser.add_argument('--anp-eps', type=float, default=0.4)
 parser.add_argument('--anp-steps', type=int, default=1)
 parser.add_argument('--anp-alpha', type=float, default=0.2)
 parser.add_argument('--clean_label', type=float, default=-1)
-parser.add_argument('--dataset', type=str, default='stl10')
+parser.add_argument('--dataset', type=str, default='cifar10')
 
 
 
@@ -110,7 +110,7 @@ def main():
     else:
        
         # Set the number of samples you want to test on
-        num_samples = 1000  # Adjust this number as needed
+        num_samples = 500  # Adjust this number as needed
 
         # Transformation for STL10 (resize to 32x32 and normalize like CIFAR10)
         transform_stl10 = transforms.Compose([
