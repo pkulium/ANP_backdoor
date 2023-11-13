@@ -130,6 +130,7 @@ def main():
             num_samples = len(matching_indices)  # Adjust num_samples if there aren't enough matching samples
         indices = np.random.choice(matching_indices, num_samples, replace=False)
         stl10_test_subset = Subset(stl10_test_full, indices)
+        clean_val = stl10_test_subset
 
 
     clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
