@@ -231,7 +231,8 @@ def mask_train(model, criterion, mask_opt, noise_opt, data_loader):
     total_loss = 0.0
     nb_samples = 0
     for i, (images, labels) in enumerate(data_loader):
-        labels = torch.tensor([stl10_to_cifar10[label.item()] for label in labels])
+        if args.dataset == 'stl10':
+            labels = torch.tensor([stl10_to_cifar10[label.item()] for label in labels])
         images, labels = images.to(device), labels.to(device)
         nb_samples += images.size(0)
 
