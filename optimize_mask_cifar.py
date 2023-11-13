@@ -108,7 +108,7 @@ def main():
       ])
       
       # Load STL10 test data
-      stl10_test_full = datasets.STL10(root='path/to/save/data', split='test', download=True, transform=transform_stl10)
+      stl10_test_full = datasets.STL10(root=f'./{args.dataset}', split='test', download=True, transform=transform_stl10)
       
       # Randomly sample a subset of the STL10 dataset
       indices = np.random.choice(len(stl10_test_full), num_samples, replace=False)
