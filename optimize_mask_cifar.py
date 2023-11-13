@@ -7,6 +7,8 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler
 from torchvision.datasets import CIFAR10
 import torchvision.transforms as transforms
+from torchvision import datasets
+
 
 import models
 import data.poison_cifar as poison
