@@ -22,7 +22,7 @@ parser.add_argument('--arch', type=str, default='resnet18',
 parser.add_argument('--checkpoint', type=str, required=True, help='The checkpoint to be pruned')
 parser.add_argument('--widen-factor', type=int, default=1, help='widen_factor for WideResNet')
 parser.add_argument('--batch-size', type=int, default=128, help='the batch size for dataloader')
-parser.add_argument('--lr', type=float, default=0.2, help='the learning rate for mask optimization')
+parser.add_argument('--lr', type=float, default=0.01, help='the learning rate for mask optimization')
 parser.add_argument('--nb-iter', type=int, default=2000, help='the number of iterations for training')
 parser.add_argument('--print-every', type=int, default=500, help='print results every few iterations')
 parser.add_argument('--data-dir', type=str, default='./data_dir', help='dir to the dataset')
