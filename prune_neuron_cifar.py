@@ -130,26 +130,26 @@ def evaluate_by_number(model, mask_values, pruning_max, pruning_step, criterion,
     return results
 
 
-# def evaluate_by_threshold(model, mask_values, pruning_max, pruning_step, criterion, clean_loader, poison_loader):
-#     results = []
-#     thresholds = np.arange(0, pruning_max + pruning_step, pruning_step)
-#     start = 0
-#     for threshold in thresholds:
-#         idx = start
-#         for idx in range(start, len(mask_values)):
-#             if float(mask_values[idx][2]) <= threshold:
-#                 pruning(model, mask_values[idx])
-#                 start += 1
-#             else:
-#                 break
-#         layer_name, neuron_idx, value = mask_values[idx][0], mask_values[idx][1], mask_values[idx][2]
-#         cl_loss, cl_acc = test(model=model, criterion=criterion, data_loader=clean_loader)
-#         po_loss, po_acc = test(model=model, criterion=criterion, data_loader=poison_loader)
-#         print('{:.2f} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
-#             start, layer_name, neuron_idx, threshold, po_loss, po_acc, cl_loss, cl_acc))
-#         results.append('{:.2f} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}\n'.format(
-#             start, layer_name, neuron_idx, threshold, po_loss, po_acc, cl_loss, cl_acc))
-#     return results
+def evaluate_by_threshold(model, mask_values, pruning_max, pruning_step, criterion, clean_loader, poison_loader):
+    results = []
+    thresholds = np.arange(0, pruning_max + pruning_step, pruning_step)
+    start = 0
+    for threshold in thresholds:
+        idx = start
+        for idx in range(start, len(mask_values)):
+            if float(mask_values[idx][2]) <= threshold:
+                pruning(model, mask_values[idx])
+                start += 1
+            else:
+                break
+        layer_name, neuron_idx, value = mask_values[idx][0], mask_values[idx][1], mask_values[idx][2]
+        cl_loss, cl_acc = test(model=model, criterion=criterion, data_loader=clean_loader)
+        po_loss, po_acc = test(model=model, criterion=criterion, data_loader=poison_loader)
+        print('{:.2f} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
+            start, layer_name, neuron_idx, threshold, po_loss, po_acc, cl_loss, cl_acc))
+        results.append('{:.2f} \t {} \t {} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}\n'.format(
+            start, layer_name, neuron_idx, threshold, po_loss, po_acc, cl_loss, cl_acc))
+    return results
 
 # def evaluate_by_threshold(model, mask_values, pruning_max, pruning_step, criterion, clean_loader, poison_loader):
 #     results = []
@@ -169,20 +169,7 @@ def evaluate_by_number(model, mask_values, pruning_max, pruning_step, criterion,
 #             start, layer_name, neuron_idx, value, po_loss, po_acc, cl_loss, cl_acc))
 #     return results
 
-def evaluate_by_threshold(model, mask_values, pruning_max, pruning_step):
-    # thresholds = np.arange(0, pruning_max + pruning_step, pruning_step)
-    # start = 0
-    # for threshold in thresholds:
-    #     idx = start
-    #     for idx in range(start, len(mask_values)):
-    #         if float(mask_values[idx][2]) <= threshold:
-    #             pruning(model, mask_values[idx])
-    #             start += 1
-    #         else:
-    #             break
-    for idx in range(0, len(mask_values)):
-        if float(mask_values[idx][2]) <= 0.9:
-            pruning(model, mask_values[idx])
+ 
 
 
 def test(model, criterion, data_loader):
